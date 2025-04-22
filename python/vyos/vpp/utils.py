@@ -252,6 +252,25 @@ def cli_ifaces_lcp_kernel_list(
     return lcp_kernel_ifaces
 
 
+def get_hugepages_info() -> dict[str, int]:
+    """
+    Retrieve the system's information on memory huge pages
+    :returns: A dictionary with the information on overall huge page count and
+        free hugepages
+    """
+    info = {}
+
+    with open('/proc/meminfo', 'r') as meminfo:
+        for line in meminfo:
+            if line.startswith('HugePages_'):
+                key, val, *_ = line.strip().split()
+                if ':' in key:
+                    key = key.replace(':', '')
+                info[key] = int(val)
+
+    return info
+
+
 def get_default_hugepage_size() -> int:
     """
     Retrieve the system's default huge page size.
